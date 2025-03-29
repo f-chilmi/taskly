@@ -1,0 +1,9 @@
+<div class="multi-select-editor">
+  <mat-checkbox
+    *ngFor="let dev of params.values"
+    [checked]="selectedValues.includes(dev)"
+    (change)="onSelectionChange(dev, $event.checked)"
+  >
+    {{ dev }}
+  </mat-checkbox>
+</div>

@@ -1,0 +1,83 @@
+<div class="p-10 flex flex-col gap-2">
+  <h2>New Task</h2>
+  <form [formGroup]="newTaskForm" class="flex flex-col gap-2">
+    <mat-form-field appearance="fill">
+      <mat-label>Task Name</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Assignees</mat-label>
+      <mat-select formControlName="developer" multiple>
+        @for (developer of staticData.developers; track developer) {
+        <mat-option [value]="developer">{{ developer }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Priority</mat-label>
+      <mat-select formControlName="priority">
+        @for (priority of staticData.priorityOptions; track priority) {
+        <mat-option [value]="priority">
+          <span [ngStyle]="{ color: staticData.priorityColors[priority] }">{{
+            priority
+          }}</span>
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        @for (status of staticData.statusOptions; track status) {
+        <mat-option [value]="status"
+          ><span [ngStyle]="{ color: staticData.statusColors[status] }">
+            {{ status }}</span
+          ></mat-option
+        >
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
+        @for (type of staticData.typeOptions; track type) {
+        <mat-option [value]="type">
+          <span [ngStyle]="{ color: staticData.typeColors[type] }">{{
+            type
+          }}</span>
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" />
+      <mat-hint>dd MMM, yyyy</mat-hint>
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Estimated SP</mat-label>
+      <input matInput type="number" formControlName="estimatedSP" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Actual SP</mat-label>
+      <input matInput type="number" formControlName="actualSP" />
+    </mat-form-field>
+
+    <div class="modal-actions flex gap-2 justify-end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-raised-button color="primary" (click)="save()">Save</button>
+    </div>
+  </form>
+</div>
