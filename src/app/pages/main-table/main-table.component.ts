@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { NewTaskModalComponent } from './components/new-task/new-task-modal.component';
 import { MatMenuModule } from '@angular/material/menu';
@@ -34,6 +34,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   styleUrl: './main-table.component.scss',
 })
 export class MainTableComponent {
+  isAgGridLoaded = false;
   gridApi!: GridApi;
   rowData: any[] = [];
   filteredData: any[] = [];
@@ -64,16 +65,22 @@ export class MainTableComponent {
 
   private _window = inject(WINDOW);
 
-  ngOnInit() {
-    if (this._window) {
-      console.log(
-        'Running in browser:',
+  async ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      // const { AgGridAngular } = await import('ag-grid-angular');
+      this.isAgGridLoaded = true;
 
-        this._window.navigator.userAgent
-      );
-    } else {
-      console.log('Running in SSR, window is not available.');
+      console.log(69, isPlatformBrowser(this.platformId), this.isAgGridLoaded);
     }
+    // if (this._window) {
+    //   console.log(
+    //     'Running in browser:'
+
+    //     // this._window.navigator.userAgent
+    //   );
+    // } else {
+    //   console.log('Running in SSR, window is not available.');
+    // }
     this.taskService.getTasks().subscribe({
       next: ({ data }) => {
         this.rowData = this.filteredData = data;

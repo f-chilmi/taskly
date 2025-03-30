@@ -47,13 +47,13 @@
   </mat-menu>
   <p *ngIf="isLoading">🔄 Loading data...</p>
 
-  <ag-grid-angular
-    class="ag-theme-alpine-dark mb-10"
-    *ngIf="!isLoading"
-    style="width: 100%; height: 70vh"
-    [rowData]="filteredData"
-    [columnDefs]="colDefs"
-    [gridOptions]="gridOptions"
-  >
-  </ag-grid-angular>
+  <ng-container *ngIf="isAgGridLoaded">
+    <ag-grid-angular
+      style="width: 100%; height: 70vh"
+      [rowData]="filteredData"
+      [columnDefs]="colDefs"
+      [gridOptions]="gridOptions"
+    >
+    </ag-grid-angular>
+  </ng-container>
 </main>
