@@ -1,1 +1,57 @@
-<p>kanban works!</p>
+<div class="flex flex-col gap-4">
+  <app-task-filters
+    [(searchTerm)]="searchTerm"
+    [(selectedDevelopers)]="selectedDevelopers"
+    [developers]="staticData.developers"
+    (searchTermChange)="filterTasks()"
+    (selectedDevelopersChange)="applyFilterDevelopers()"
+  ></app-task-filters>
+  <div class="kanban-board" cdkDropListGroup>
+    <div
+      class="kanban-column"
+      *ngFor="let status of staticData.statusOptions"
+      cdkDropList
+      [cdkDropListConnectedTo]="staticData.statusOptions"
+      [cdkDropListData]="filteredTasks()[status]"
+      (cdkDropListDropped)="onDrop($event, status)"
+      [style.backgroundColor]="getStatusColor(status)"
+      [id]="status"
+    >
+      <h3 class="kanban-header text-white">{{ status }}</h3>
+      <div class="kanban-card" *ngFor="let task of tasks()[status]" cdkDrag>
+        <p>{{ task.title }}</p>
+        <div class="task-info">
+          <div
+            class="info-card priority"
+            [ngStyle]="{
+              'border-left-color': staticData.priorityColors[task.priority]
+            }"
+          >
+            <span>{{ task.priority }}</span>
+          </div>
+          <div
+            class="info-card type"
+            [ngStyle]="{
+              'border-left-color': staticData.typeColors[task.type]
+            }"
+          >
+            <span>{{ task.type }}</span>
+          </div>
+          <div class="info-card sp">
+            <span>{{ task["Estimated SP"] }} SP</span>
+          </div>
+        </div>
+
+        <div class="developer-list">
+          <div
+            *ngFor="let dev of getDevelopers(task.developer)"
+            class="developer-avatar"
+            [matTooltip]="dev"
+          >
+            {{ getInitials(dev) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

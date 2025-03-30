@@ -1,10 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { NewTaskModalComponent } from './components/new-task/new-task-modal.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +12,10 @@ import { StaticDataService } from '../../services/static-data.service';
 import { MultiSelectEditorComponent } from './components/multi-select-editor/multi-select-editor.component';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { WINDOW } from '../../tokens/window.token';
+import { format } from 'date-fns';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TaskFiltersComponent } from '../../shared/task-filters/task-filters.component';
+import { Observable } from 'rxjs';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,6 +31,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,
+    MatTooltipModule,
+    TaskFiltersComponent,
   ],
   templateUrl: './main-table.component.html',
   styleUrl: './main-table.component.scss',
@@ -45,9 +49,6 @@ export class MainTableComponent {
   selectAllDevelopers = false;
 
   gridOptions = {
-    // pagination: true,
-    // paginationPageSize: 50,
-    // paginationPageSizeSelector: [10, 25, 50],
     pagination: false,
     rowModelType: 'clientSide' as any,
     domLayout: 'autoHeight' as any,
@@ -63,49 +64,57 @@ export class MainTableComponent {
     public staticData: StaticDataService
   ) {}
 
-  private _window = inject(WINDOW);
+  tasks$!: Observable<any[]>;
 
-  async ngOnInit() {
+  ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      // const { AgGridAngular } = await import('ag-grid-angular');
       this.isAgGridLoaded = true;
-
-      console.log(69, isPlatformBrowser(this.platformId), this.isAgGridLoaded);
     }
-    // if (this._window) {
-    //   console.log(
-    //     'Running in browser:'
 
-    //     // this._window.navigator.userAgent
-    //   );
-    // } else {
-    //   console.log('Running in SSR, window is not available.');
-    // }
-    this.taskService.getTasks().subscribe({
-      next: ({ data }) => {
-        this.rowData = this.filteredData = data;
-        if (data.length) this.colDefs = this.buildColDefs(data[0]);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('API Error:', err);
-        this.isLoading = false;
-      },
+    this.tasks$ = this.taskService.tasks$;
+
+    this.tasks$.subscribe((data: any[]) => {
+      this.rowData = this.filteredData = data;
+      if (data.length) {
+        this.colDefs = this.buildColDefs(data[0]);
+      }
+      this.isLoading = false;
     });
-  }
 
-  loadAgGrid() {
-    this.taskService.getTasks().subscribe({});
+    this.taskService.getTasks().subscribe();
   }
-
   buildColDefs(data: any): ColDef[] {
     return [
       ...Object.keys(data).map((key) => {
-        if (key === 'developer') {
+        if (key === 'title') {
           return {
             field: key,
+            headerName: 'Title',
+            editable: true,
+            minWidth: 250,
+            flex: 3,
+          };
+        } else if (key === 'developer') {
+          return {
+            field: key,
+            flex: 1,
             headerName: 'Developer',
             editable: true,
+            cellRenderer: (params: any) => {
+              if (!params.value) return '';
+
+              return `<div class="flex items-center gap-2 justify-center">${params.value
+                .split(', ')
+                .map((assignee: any) => {
+                  const initials = assignee[0].toUpperCase();
+                  return `
+                    <div matTooltip=${assignee[0]} class="assignee-avatar rounded-full w-[30px] h-[30px] flex items-center justify-center bg-[purple] text-white" title="${assignee[0]}" data-name="${assignee[0]}">
+                      ${initials}
+                    </div>
+                  `;
+                })}</div>`;
+            },
+
             cellEditor: MultiSelectEditorComponent,
             cellEditorPopup: true,
             cellEditorParams: { values: this.staticData.developers },
@@ -113,6 +122,7 @@ export class MainTableComponent {
         } else if (['priority', 'status', 'type'].includes(key)) {
           return {
             field: key,
+            flex: 1,
             headerName: this.capitalize(key),
             editable: true,
             cellEditor: 'agSelectCellEditor',
@@ -129,43 +139,46 @@ export class MainTableComponent {
         } else if (key === 'date') {
           return {
             field: key,
+            flex: 1,
             headerName: 'Date',
             editable: true,
             cellEditor: 'agDateCellEditor',
             cellEditorParams: { format: 'dd MMM, yyyy' },
+            valueGetter: (p: any) =>
+              format(new Date(p.data[key]), 'dd MMM, yyy'),
+          };
+        } else if (key.includes('SP')) {
+          return {
+            field: key,
+            flex: 1,
+            headerName: this.capitalize(key),
+            editable: true,
+            valueGetter: (p: any) => p.data[key] + ' SP',
           };
         }
         return { field: key, headerName: this.capitalize(key), editable: true };
       }),
       {
         field: 'date',
+        flex: 1,
         headerName: 'Date',
         editable: true,
         cellEditor: 'agDateCellEditor',
         cellEditorParams: { format: 'dd MMM, yyyy' },
+        valueGetter: (p: any) =>
+          p.data.date ? format(new Date(p.data.date), 'dd MMM, yyy') : '',
       },
     ];
   }
 
-  onGridReady(params: GridReadyEvent) {
-    this.gridApi = params.api;
+  filterByAssignee(name: string) {
+    this.filteredData = this.rowData.filter((item: any) =>
+      item.assignees?.some((a: any) => a.name === name)
+    );
   }
 
-  openNewTaskModal() {
-    this.dialog
-      .open(NewTaskModalComponent, { width: '700px', height: '60vh' })
-      .afterClosed()
-      .subscribe((result) => {
-        if (!result) return;
-        const newData = {
-          ...result,
-          'Actual SP': result.actualSP,
-          'Estimated SP': result.estimatedSP,
-          developer: result.developer.join(', '),
-        };
-        this.rowData.unshift(newData);
-        this.filteredData = [...this.rowData];
-      });
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
   }
 
   filterTasks() {
@@ -204,5 +217,13 @@ export class MainTableComponent {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  clearSelection() {}
+  getSelectedDevelopersCount(): number {
+    return Object.values(this.selectedDevelopers).filter((value) => value)
+      .length;
+  }
+
+  clearSelection() {
+    this.selectedDevelopers = {};
+    this.filteredData = this.rowData;
+  }
 }

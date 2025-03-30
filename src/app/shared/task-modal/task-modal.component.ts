@@ -13,10 +13,10 @@ import {
   provideNativeDateAdapter,
 } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { StaticDataService } from '../../../../services/static-data.service';
 import { CommonModule } from '@angular/common';
 
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { StaticDataService } from '../../services/static-data.service';
 
 export const CUSTOM_DATE_FORMATS = {
   parse: { dateInput: 'dd MMM, yyyy' },
@@ -29,8 +29,8 @@ export const CUSTOM_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-new-task-modal',
-  templateUrl: './new-task-modal.component.html',
+  selector: 'app-task-modal',
+  templateUrl: './task-modal.component.html',
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -49,7 +49,7 @@ export const CUSTOM_DATE_FORMATS = {
     provideNativeDateAdapter(),
   ],
 })
-export class NewTaskModalComponent {
+export class TaskModalComponent {
   newTaskForm = new FormGroup({
     title: new FormControl<string | null>(null, Validators.required),
     developer: new FormControl<string[] | null>([], Validators.required),
@@ -62,7 +62,7 @@ export class NewTaskModalComponent {
   });
 
   constructor(
-    private dialogRef: MatDialogRef<NewTaskModalComponent>,
+    private dialogRef: MatDialogRef<TaskModalComponent>,
     public staticData: StaticDataService
   ) {}
 

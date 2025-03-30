@@ -1,0 +1,56 @@
+.kanban-board {
+  display: flex;
+  gap: 16px;
+}
+.kanban-column {
+  flex: 1;
+  background: #f3f3f3;
+  padding: 8px;
+  border-radius: 8px;
+  min-width: 300px;
+}
+.kanban-card {
+  background: white;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 4px;
+  cursor: grab;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+
+  .task-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+
+    .info-card {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      border-left: 4px solid transparent;
+      background: #f5f5f5;
+    }
+  }
+  .developer-list {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+  }
+
+  .developer-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: purple;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}

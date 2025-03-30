@@ -3,6 +3,7 @@
     (selectedTabChange)="onTabChange($event)"
     mat-stretch-tabs="false"
     mat-align-tabs="start"
+    [(selectedIndex)]="selectedIndex"
   >
     <mat-tab label="📋 Task Table" routerLink="/tasks"></mat-tab>
     <mat-tab label="📌 Kanban Board" routerLink="/kanban"></mat-tab>

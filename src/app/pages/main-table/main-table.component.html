@@ -1,54 +1,17 @@
 <main class="flex flex-col gap-4">
-  <div class="flex items-center gap-2 mt-4">
-    <div class="search-container">
-      <input
-        type="text"
-        placeholder="Search by title..."
-        [(ngModel)]="searchTerm"
-        (input)="filterTasks()"
-        class="search-input rounded-full"
-      />
-    </div>
-    <button
-      mat-stroked-button
-      [matMenuTriggerFor]="personMenu"
-      [matMenuTriggerData]="{}"
-    >
-      👤 Person
-    </button>
-    <button mat-stroked-button>⬆⬇ Sort</button>
+  <app-task-filters
+    [(searchTerm)]="searchTerm"
+    [(selectedDevelopers)]="selectedDevelopers"
+    [developers]="staticData.developers"
+    (searchTermChange)="filterTasks()"
+    (selectedDevelopersChange)="applyFilterDevelopers()"
+  ></app-task-filters>
 
-    <button
-      class="rounded-xs ml-auto"
-      mat-flat-button
-      color="primary"
-      (click)="openNewTaskModal()"
-    >
-      New Task
-    </button>
-  </div>
-  <mat-menu #personMenu="matMenu">
-    <button mat-menu-item (click)="clearSelection(); $event.preventDefault()">
-      <mat-checkbox
-        [(ngModel)]="selectAllDevelopers"
-        (change)="toggleAllSelection()"
-      >
-        Select All
-      </mat-checkbox>
-    </button>
-    <button mat-menu-item *ngFor="let dev of staticData.developers">
-      <mat-checkbox
-        [(ngModel)]="selectedDevelopers[dev]"
-        (change)="applyFilterDevelopers()"
-      >
-        {{ dev }}
-      </mat-checkbox>
-    </button>
-  </mat-menu>
   <p *ngIf="isLoading">🔄 Loading data...</p>
 
   <ng-container *ngIf="isAgGridLoaded">
     <ag-grid-angular
+      *ngIf="tasks$ | async as tasks"
       style="width: 100%; height: 70vh"
       [rowData]="filteredData"
       [columnDefs]="colDefs"

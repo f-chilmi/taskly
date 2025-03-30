@@ -1,0 +1,44 @@
+<section>
+  <div class="flex items-center gap-2 mt-4">
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Search by title..."
+        [(ngModel)]="searchTerm"
+        (input)="filterTasks()"
+        class="search-input rounded-full"
+      />
+    </div>
+    <button
+      mat-stroked-button
+      [matMenuTriggerFor]="personMenu"
+      [matMenuTriggerData]="{}"
+    >
+      Developer
+      <span *ngIf="getSelectedDevelopersCount() > 0"
+        >: {{ getSelectedDevelopersCount() }} selected</span
+      >
+    </button>
+    <button mat-stroked-button>⬆⬇ Sort</button>
+
+    <mat-menu #personMenu="matMenu">
+      <button mat-menu-item *ngFor="let dev of developers">
+        <mat-checkbox
+          [(ngModel)]="selectedDevelopers[dev]"
+          (change)="applyFilterDevelopers()"
+        >
+          {{ dev }}
+        </mat-checkbox>
+      </button>
+    </mat-menu>
+
+    <button
+      class="rounded-xs ml-auto"
+      mat-flat-button
+      color="primary"
+      (click)="openNewTaskModal()"
+    >
+      New Task
+    </button>
+  </div>
+</section>

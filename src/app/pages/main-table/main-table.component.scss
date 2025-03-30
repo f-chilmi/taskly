@@ -25,3 +25,21 @@
   border-radius: 100px;
   outline: none;
 }
+
+.assignee-avatar {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 32px;
+  cursor: pointer;
+  margin: 2px;
+}
+.assignee-avatar:hover {
+  opacity: 0.8;
+}

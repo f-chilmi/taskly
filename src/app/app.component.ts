@@ -1,17 +1,25 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { KanbanModule } from '@syncfusion/ej2-angular-kanban';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-taskly',
-  imports: [RouterOutlet, MatTabsModule],
+  imports: [KanbanModule, RouterOutlet, MatTabsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.selectedIndex = event.url.includes('/kanban') ? 1 : 0;
+      }
+    });
+  }
 
   title = 'taskly';
+  selectedIndex = 0;
 
   theme: 'light' | 'dark' = 'dark';
 
