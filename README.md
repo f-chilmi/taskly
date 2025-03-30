@@ -5,10 +5,12 @@ Taskly is a simple task management application built using **Angular** and **AG 
 ## Features
 
 - **Task Management**: Add, edit, and filter tasks.
-<!-- - **Infinite Scrolling**: Load more tasks as you scroll down. -->
+- **Kanban Board**: Visualize tasks in a Kanban layout, allowing for drag-and-drop task management across different statuses.
 - **Developer Filtering**: Filter tasks by assigned developers.
 - **AG Grid Integration**: Editable and customizable table columns.
+- **Inline Editing in Table**: Directly edit task details within the AG Grid table cells.
 - **Material UI**: Uses Angular Material for UI components.
+- **Search Functionality**: Quickly find tasks using the search bar.
 
 ## Tech Stack
 
@@ -47,8 +49,9 @@ Taskly is a simple task management application built using **Angular** and **AG 
 
 - **Adding a Task**: Click the "New Task" button and fill in the form.
 - **Editing a Task**: Click on a cell in the grid to edit values.
+- **Editing a Task (Kanban)**: Drag and drop tasks between Kanban columns to update their status.
 - **Filtering**: Use the search box or developer filters to find specific tasks.
-- **Infinite Scrolling**: Scroll down to load more tasks.
+- **Kanban View**: Switch to the Kanban view to visualize tasks in a Kanban board.
 
 ## Deployment
 
