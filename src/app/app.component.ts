@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { KanbanModule } from '@syncfusion/ej2-angular-kanban';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-taskly',
-  imports: [KanbanModule, RouterOutlet, MatTabsModule],
+  imports: [RouterOutlet, MatTabsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
